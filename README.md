@@ -78,14 +78,27 @@ ax1 = df.plot.scatter(x='created_at',
 
 ![image](https://user-images.githubusercontent.com/75325334/117595499-00bdda00-b10f-11eb-9769-472a07d7b0f6.png)
 
-The outlier orders are coming in regularly. Next, lets calculate z-scores so that we can apply the boolean results back against dataframe to filter out some of our outliers.
-```oa_df = df[['order_amount']]
+The outlier orders are coming in regularly. Next, lets calculate z-scores so that we can create a boolean array and match the results back against dataframe to filter out some of our outliers using the index.
+```python
+oa_df = df[['order_amount']]
 
 z_scores = stats.zscore(oa_df)
 abs_z_scores = np.abs(z_scores)
 filtered_entries = (abs_z_scores < 3).all(axis=1)
 new_df = df[filtered_entries]
 ```
+After the z-score filtering
+```python
+x_labels=["Order Amount"]
+fig, ax = plt.subplots()
+ax.boxplot(new_df["order_amount"], labels=x_labels)
+
+ax.set_ylabel('$ Amount')
+#ax.set_yticks(np.arange())
+ax.grid()
+plt.show
+```
+
 ![image](https://user-images.githubusercontent.com/75325334/117595709-8772b700-b10f-11eb-80d7-19a60f84a40a.png)
 
 The box whisker is telling me that working with the AOV is still dominated by extreme outliers and unless we can bin our users into sensible categories we are going to have a very hard time deriving value from our AOV calculation.
