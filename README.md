@@ -102,3 +102,54 @@ plt.show
 ![image](https://user-images.githubusercontent.com/75325334/117595709-8772b700-b10f-11eb-80d7-19a60f84a40a.png)
 
 The box whisker is telling me that working with the AOV is still dominated by extreme outliers and unless we can bin our users into sensible categories we are going to have a very hard time deriving value from our AOV calculation.
+
+
+----------------------------------
+
+Question 2: For this question you’ll need to use SQL. Follow this link to access the data set required for the challenge. Please use queries to answer the following questions. Paste your queries along with your final numerical answers below.
+
+a.	How many orders were shipped by Speedy Express in total?
+
+54 orders
+
+--Display ShipperName and # of OrdersShipped
+SELECT ShipperName, COUNT(DISTINCT OrderID) AS OrdersShipped
+	FROM Shippers
+    	INNER JOIN Orders
+        --Join on ShipperID, the PK from Shippers table
+        USING(ShipperID)
+        --Grab the correct ShipperID for the join above by entering the name in question below.
+WHERE ShipperName = "Speedy Express"
+
+b.	What is the last name of the employee with the most orders?
+
+Peacock with 40 orders
+
+-- Select LastName, a count of orders per employee, and EID (prevent confusion in case of individuals sharing a last name)
+SELECT LastName, EmployeeID, count(OrderID) AS num_orders
+	FROM Orders
+    --Need employees table for LastName
+    INNER JOIN Employees
+    USING(EmployeeID)
+    --Below condition is required for the count in select statement to work
+    GROUP BY EmployeeID
+    --Only show the num_orders leader
+    ORDER BY num_orders DESC
+    LIMIT 1
+
+c.	What product was ordered the most by customers in Germany?
+
+The most popular product was Boston Crab Meat which had 160 total orders
+
+SELECT C.Country, P.ProductName, SUM(OD.Quantity) AS "TotalOrders"
+	FROM Customers AS C
+    INNER JOIN Orders AS O
+    	USING(CustomerID)
+    INNER JOIN OrderDetails AS OD
+    	USING(OrderID)
+    INNER JOIN Products AS P
+    	USING(ProductID)
+    WHERE Country = "Germany"
+    --Group by product name gets the correct sums for product order totals per product 
+    GROUP BY P.ProductName
+    ORDER BY TotalOrders DESC
